@@ -157,8 +157,8 @@ export default function PanelCiudadano({ usuarioId }: PanelCiudadanoProps) {
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${denuncia.estado === "en_revision"
-                        ? "bg-yellow-100 text-yellow-800 border border-yellow-200"
-                        : "bg-green-100 text-green-800 border border-green-200"
+                          ? "bg-yellow-100 text-yellow-800 border border-yellow-200"
+                          : "bg-green-100 text-green-800 border border-green-200"
                         }`}
                     >
                       {denuncia.estado === "en_revision" ? "En proceso" : "Resueltas"}
@@ -185,12 +185,14 @@ export default function PanelCiudadano({ usuarioId }: PanelCiudadanoProps) {
 
                   <div className="text-sm text-gray-400">{formatearFechaCorta(denuncia.creado_en)}</div>
 
-                  {denuncia.revisores && denuncia.revisores.length > 0 && (
+                  {denuncia.estado === "tomaron_el_caso" && denuncia.revisores && denuncia.revisores.length > 0 && (
                     <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                      <p className="text-sm font-medium text-green-800">
+                      <p className="text-sm font-semibold text-green-900 mb-1">
                         Revisor asignado: {denuncia.revisores[0].nombre_completo}
                       </p>
-                      <p className="text-xs text-green-600">Grupo VerdeLex</p>
+                      <p className="text-xs text-green-700">📧 {denuncia.revisores[0].correo}</p>
+                      <p className="text-xs text-green-700">📞 {denuncia.revisores[0].telefono || "No disponible"}</p>
+                      <p className="text-xs text-green-600 mt-1">Grupo VerdeLex - Derecho Ambiental</p>
                     </div>
                   )}
                 </div>

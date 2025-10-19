@@ -4,7 +4,11 @@ import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import type { Demanda } from "@/lib/tipos"
 
-// Importar Leaflet dinámicamente para evitar problemas con SSR
+interface MapaInteractivoProps {
+  denuncias?: Demanda[]
+  denunciaId?: number
+}
+
 const MapaContenido = dynamic(() => import("./mapa-contenido"), {
   ssr: false,
   loading: () => (
@@ -14,17 +18,26 @@ const MapaContenido = dynamic(() => import("./mapa-contenido"), {
   ),
 })
 
-export default function MapaInteractivo() {
-  const [denuncias, setDenuncias] = useState<Demanda[]>([])
-  const [cargando, setCargando] = useState(true)
+export default function MapaInteractivo({ denuncias: denunciasProp, denunciaId }: MapaInteractivoProps = {}) {
+  const [denuncias, setDenuncias] = useState<Demanda[]>(denunciasProp || [])
+  const [cargando, setCargando] = useState(!denunciasProp)
 
   useEffect(() => {
+    if (denunciasProp) {
+      setDenuncias(denunciasProp)
+      return
+    }
+
     async function cargarDenuncias() {
       try {
         const res = await fetch("/api/denuncias/mapa")
         if (res.ok) {
           const data = await res.json()
-          setDenuncias(data)
+          if (denunciaId) {
+            setDenuncias(data.filter((d: Demanda) => d.id === denunciaId))
+          } else {
+            setDenuncias(data)
+          }
         }
       } catch (error) {
         console.error("[v0] Error al cargar denuncias para mapa:", error)
@@ -34,7 +47,7 @@ export default function MapaInteractivo() {
     }
 
     cargarDenuncias()
-  }, [])
+  }, [denunciasProp, denunciaId])
 
   if (cargando) {
     return (

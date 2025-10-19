@@ -25,3 +25,7 @@ export function cerrarSesion() {
     localStorage.removeItem("usuario_sesion");
   }
 }
+
+export function obtenerUsuarioActual(): UsuarioSesion | null {
+  return obtenerSesion();
+}

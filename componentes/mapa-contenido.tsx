@@ -1,11 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { MapContainer, TileLayer, Marker } from "react-leaflet"
 import L from "leaflet"
 import type { Demanda } from "@/lib/tipos"
 import { obtenerColorPrioridad, obtenerTextoPrioridad, formatearFechaCorta } from "@/lib/utilidades"
 import "leaflet/dist/leaflet.css"
+
+interface MapaContenidoProps {
+  denuncias: Demanda[]
+}
 
 // Configurar iconos de Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -15,15 +19,10 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 })
 
-interface MapaContenidoProps {
-  denuncias: Demanda[]
-}
-
-// Función para crear iconos personalizados según prioridad
 function crearIconoPrioridad(prioridad: string) {
-  let color = "#eab308" // amarillo por defecto (medio)
-  if (prioridad === "critica") color = "#ef4444" // rojo
-  if (prioridad === "alta") color = "#f97316" // naranja
+  let color = "#eab308"
+  if (prioridad === "critica") color = "#ef4444"
+  if (prioridad === "alta") color = "#f97316"
 
   return L.divIcon({
     className: "custom-marker",
@@ -36,7 +35,6 @@ function crearIconoPrioridad(prioridad: string) {
 export default function MapaContenido({ denuncias }: MapaContenidoProps) {
   const [denunciaSeleccionada, setDenunciaSeleccionada] = useState<Demanda | null>(null)
 
-  // Centro de Colombia
   const centroMapa: [number, number] = [4.5709, -74.2973]
 
   return (
@@ -58,25 +56,11 @@ export default function MapaContenido({ denuncias }: MapaContenidoProps) {
               eventHandlers={{
                 click: () => setDenunciaSeleccionada(denuncia),
               }}
-            >
-              <Popup>
-                <div className="min-w-[200px]">
-                  <h3 className="font-bold text-sm mb-1">{denuncia.titulo}</h3>
-                  <p className="text-xs text-gray-600 mb-2 line-clamp-2">{denuncia.descripcion}</p>
-                  <div className="flex gap-2 mb-2">
-                    <span className={`text-xs px-2 py-1 rounded ${obtenerColorPrioridad(denuncia.prioridad)}`}>
-                      {obtenerTextoPrioridad(denuncia.prioridad)}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500">{denuncia.ubicacion_texto}</p>
-                </div>
-              </Popup>
-            </Marker>
+            />
           )
         })}
       </MapContainer>
 
-      {/* Panel lateral con detalles de denuncia seleccionada */}
       {denunciaSeleccionada && (
         <div className="absolute top-4 right-4 w-96 bg-white rounded-lg shadow-xl z-[1000] max-h-[calc(100vh-8rem)] overflow-y-auto">
           <div className="p-6">
@@ -130,6 +114,22 @@ export default function MapaContenido({ denuncias }: MapaContenidoProps) {
                 </div>
               </div>
             )}
+
+            {denunciaSeleccionada.estado === "tomaron_el_caso" &&
+              denunciaSeleccionada.revisores &&
+              denunciaSeleccionada.revisores.length > 0 && (
+                <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                  <h3 className="font-semibold mb-2 text-green-900">Revisor asignado</h3>
+                  <p className="text-sm text-green-800">
+                    <span className="font-medium">{denunciaSeleccionada.revisores[0].nombre_completo}</span>
+                  </p>
+                  <p className="text-xs text-green-700">📧 {denunciaSeleccionada.revisores[0].correo}</p>
+                  <p className="text-xs text-green-700">
+                    📞 {denunciaSeleccionada.revisores[0].telefono || "No disponible"}
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">Grupo VerdeLex - Derecho Ambiental</p>
+                </div>
+              )}
 
             <div className="flex items-center gap-4 text-sm text-gray-500 py-3 border-t">
               <span>❤️ 456</span>

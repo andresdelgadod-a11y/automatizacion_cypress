@@ -39,7 +39,7 @@ export default function PanelRevisor({ revisorId }: PanelRevisorProps) {
         const todasDenuncias: Demanda[] = await resDenuncias.json()
 
         const disponibles = todasDenuncias.filter(
-          (d) => d.estado === "en_revision" && (!d.revisores || !d.revisores.some((r) => r.id === revisorId)),
+          (d) => d.estado === "en_revision" && (!d.revisores || d.revisores.length === 0),
         )
         setDenunciasDisponibles(disponibles)
 
@@ -63,7 +63,7 @@ export default function PanelRevisor({ revisorId }: PanelRevisorProps) {
 
       if (res.ok) {
         alert("Caso tomado exitosamente")
-        cargarDatos()
+        await cargarDatos()
         setVistaActual("mis_casos")
       } else {
         const error = await res.json()
@@ -132,17 +132,17 @@ export default function PanelRevisor({ revisorId }: PanelRevisorProps) {
         <button
           onClick={() => setVistaActual("disponibles")}
           className={`px-6 py-3 font-medium transition-colors ${vistaActual === "disponibles"
-            ? "border-b-2 border-[#0d7c66] text-[#0d7c66]"
-            : "text-gray-600 hover:text-gray-900"
+              ? "border-b-2 border-[#0d7c66] text-[#0d7c66]"
+              : "text-gray-600 hover:text-gray-900"
             }`}
         >
-          Disponibles ({estadisticas?.disponibles || 0})
+          Disponibles ({denunciasDisponibles.length})
         </button>
         <button
           onClick={() => setVistaActual("mis_casos")}
           className={`px-6 py-3 font-medium transition-colors ${vistaActual === "mis_casos"
-            ? "border-b-2 border-[#0d7c66] text-[#0d7c66]"
-            : "text-gray-600 hover:text-gray-900"
+              ? "border-b-2 border-[#0d7c66] text-[#0d7c66]"
+              : "text-gray-600 hover:text-gray-900"
             }`}
         >
           Mis casos tomados ({misCasos.length})

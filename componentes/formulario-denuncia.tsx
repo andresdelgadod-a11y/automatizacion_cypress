@@ -1,14 +1,19 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation"
 import type { TipoDemanda } from "@/lib/tipos"
+import { obtenerUsuarioActual } from "@/lib/auth"
 
 // Importar selector de mapa dinámicamente
 const SelectorUbicacionMapa = dynamic(() => import("./selector-ubicacion-mapa"), {
   ssr: false,
-  loading: () => <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">Cargando mapa...</div>,
+  loading: () => (
+    <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">Cargando mapa...</div>
+  ),
 })
 
 export default function FormularioDenuncia() {
@@ -85,14 +90,15 @@ export default function FormularioDenuncia() {
     setEnviando(true)
 
     try {
-      // Por ahora, simulamos la subida de fotos con URLs de placeholder
+      const usuario = obtenerUsuarioActual()
+
       const fotosData = archivos.map((archivo, index) => ({
         ruta: `/placeholder.svg?height=400&width=600&query=${encodeURIComponent(archivo.name)}`,
         descripcion: archivo.name,
       }))
 
       const datos = {
-        ciudadano_id: 2, // TODO: Obtener del usuario autenticado
+        ciudadano_id: anonima ? null : usuario?.id || null,
         titulo,
         descripcion,
         tipo_demanda_id: Number.parseInt(tipoDemandaId),
@@ -113,7 +119,7 @@ export default function FormularioDenuncia() {
       if (res.ok) {
         const resultado = await res.json()
         alert("Denuncia creada exitosamente")
-        router.push(`/denuncias/${resultado.demanda_id}`)
+        router.push("/ciudadano/panel")
       } else {
         const error = await res.json()
         alert(`Error: ${error.error}`)
@@ -195,9 +201,7 @@ export default function FormularioDenuncia() {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0d7c66] focus:border-transparent resize-none"
           required
         />
-        <p className="text-sm text-gray-500 mt-1">
-          Cuenta qué ocurrió, cuándo y quiénes podrían estar implicados.
-        </p>
+        <p className="text-sm text-gray-500 mt-1">Cuenta qué ocurrió, cuándo y quiénes podrían estar implicados.</p>
       </div>
 
       {/* Evidencia (fotos) */}
@@ -247,7 +251,7 @@ export default function FormularioDenuncia() {
         </div>
 
         <p className="text-sm text-gray-600 mb-3">
-          El botón de "Mi ubicación" se utilizará para facilitar la ubicación actual, donde funcionará en compañía del
+          El botón de Mi ubicación se utilizará para facilitar la ubicación actual, donde funcionará en compañía del
           mapa para colocar la ubicación real de donde está el ciudadano en el momento.
         </p>
 
@@ -256,8 +260,8 @@ export default function FormularioDenuncia() {
           <SelectorUbicacionMapa coordenadas={coordenadas} onCambiarCoordenadas={setCoordenadas} />
         </div>
         <p className="text-sm text-gray-500 mt-2">
-          Aquí va ir un mapa único para esta denuncia donde el ciudadano va tener la opción de marcar la ubicación
-          donde es el sitio del problema. Esto con la ayuda de la librería de "leaflet".
+          Aquí va ir un mapa único para esta denuncia donde el ciudadano va tener la opción de marcar la ubicación donde
+          es el sitio del problema. Esto con la ayuda de la librería de leaflet.
         </p>
       </div>
 
