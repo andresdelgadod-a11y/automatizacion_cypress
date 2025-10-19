@@ -1,10 +1,10 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { guardarSesion } from "@/lib/auth"
 
 export default function PaginaLogin() {
   const router = useRouter()
@@ -25,7 +25,7 @@ export default function PaginaLogin() {
 
       if (res.ok) {
         const data = await res.json()
-        // TODO: Guardar sesión
+        guardarSesion(data.usuario)
         alert(`Bienvenido ${data.usuario.nombre_completo}`)
 
         // Redirigir según el rol
@@ -111,9 +111,9 @@ export default function PaginaLogin() {
         <div className="mt-8 p-4 bg-blue-50 rounded-lg">
           <p className="text-sm text-gray-700 font-semibold mb-2">Usuarios de prueba:</p>
           <ul className="text-xs text-gray-600 space-y-1">
-            <li>Admin: admin@gmail.com / admin123</li>
-            <li>Ciudadano: ciudadano@gmail.com / ciudadano123</li>
+            <li>Ciudadano: david@gmail.com / 12345678</li>
             <li>Revisor: revisor@gmail.com / revisor123</li>
+            <li>Admin: admin@gmail.com / admin123</li>
           </ul>
         </div>
 
