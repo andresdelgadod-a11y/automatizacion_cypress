@@ -80,11 +80,11 @@ export default function FormularioDenuncia() {
   const manejarEnvio = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // ✅ Validación: todos menos evidencias
-    if (!titulo.trim() || !descripcion.trim() || !tipoDemandaId || !ubicacionTexto.trim()) {
-      toast.error('Por favor completa todos los campos obligatorios');
-      return;
-    }
+    // // ✅ Validación: todos menos evidencias
+    // if (!titulo.trim() || !descripcion.trim() || !tipoDemandaId || !ubicacionTexto.trim()) {
+    //   toast.error('Por favor completa todos los campos obligatorios');
+    //   return;
+    // }
     if (!coordenadas) {
       toast.error('Selecciona una ubicación en el mapa');
       return;
