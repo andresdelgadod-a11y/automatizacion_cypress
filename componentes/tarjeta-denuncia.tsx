@@ -50,7 +50,7 @@ export default function TarjetaDenuncia({ denuncia, mostrarAcciones = false }: T
 
         {mostrarAcciones && (
           <Link
-            href={`/denuncias/${denuncia.id}`}
+            href={'auth/login'}
             className="block w-full text-center bg-[#0d7c66] text-white py-2 rounded-lg hover:bg-[#0a5f4f] transition-colors"
           >
             Ver detalles

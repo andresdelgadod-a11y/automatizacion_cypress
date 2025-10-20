@@ -7,6 +7,7 @@ import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import type { TipoDemanda } from "@/lib/tipos"
 import { obtenerUsuarioActual } from "@/lib/auth"
+import { toast } from "sonner"
 
 // Importar selector de mapa dinámicamente
 const SelectorUbicacionMapa = dynamic(() => import("./selector-ubicacion-mapa"), {
@@ -44,7 +45,8 @@ export default function FormularioDenuncia() {
           }
         }
       } catch (error) {
-        console.error("[v0] Error al cargar tipos de demanda:", error)
+        console.error("[v0] Error al cargar tipos de demanda:", error);
+        toast.error('No se pudieron cargar los tipos de denuncia');
       }
     }
     cargarTipos()
@@ -52,24 +54,20 @@ export default function FormularioDenuncia() {
 
   // Obtener ubicación actual del usuario
   const obtenerUbicacionActual = () => {
-    if ("geolocation" in navigator) {
+    if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setCoordenadas({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          })
-          setUbicacionTexto(`${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`)
+          setCoordenadas({ lat: position.coords.latitude, lng: position.coords.longitude });
+          setUbicacionTexto(
+            `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`
+          );
+          toast.success('Ubicación detectada correctamente');
         },
-        (error) => {
-          console.error("[v0] Error al obtener ubicación:", error)
-          alert("No se pudo obtener tu ubicación. Por favor, selecciona manualmente en el mapa.")
-        },
-      )
+      );
     } else {
-      alert("Tu navegador no soporta geolocalización")
+      toast.error('Tu navegador no soporta geolocalización');
     }
-  }
+  };
 
   // Manejar cambio de archivos
   const manejarArchivos = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,20 +80,24 @@ export default function FormularioDenuncia() {
   const manejarEnvio = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!titulo || !descripcion || !tipoDemandaId) {
-      alert("Por favor completa todos los campos requeridos")
-      return
+    // ✅ Validación: todos menos evidencias
+    if (!titulo.trim() || !descripcion.trim() || !tipoDemandaId || !ubicacionTexto.trim()) {
+      toast.error('Por favor completa todos los campos obligatorios');
+      return;
+    }
+    if (!coordenadas) {
+      toast.error('Selecciona una ubicación en el mapa');
+      return;
     }
 
-    setEnviando(true)
-
+    setEnviando(true);
     try {
-      const usuario = obtenerUsuarioActual()
+      const usuario = obtenerUsuarioActual();
 
-      const fotosData = archivos.map((archivo, index) => ({
+      const fotosData = archivos.map((archivo) => ({
         ruta: `/placeholder.svg?height=400&width=600&query=${encodeURIComponent(archivo.name)}`,
         descripcion: archivo.name,
-      }))
+      }));
 
       const datos = {
         ciudadano_id: anonima ? null : usuario?.id || null,
@@ -108,29 +110,28 @@ export default function FormularioDenuncia() {
         latitud: coordenadas?.lat || null,
         longitud: coordenadas?.lng || null,
         fotos: fotosData,
-      }
+      };
 
-      const res = await fetch("/api/denuncias", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/denuncias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(datos),
-      })
+      });
 
       if (res.ok) {
-        const resultado = await res.json()
-        alert("Denuncia creada exitosamente")
-        router.push("/ciudadano/panel")
+        toast.success('Denuncia creada exitosamente');
+        router.push('/ciudadano/panel');
       } else {
-        const error = await res.json()
-        alert(`Error: ${error.error}`)
+        const error = await res.json();
+        toast.error(`Error: ${error.error}`);
       }
     } catch (error) {
-      console.error("[v0] Error al crear denuncia:", error)
-      alert("Error al crear la denuncia")
+      console.error('[v0] Error al crear denuncia:', error);
+      toast.error('Ocurrió un error al crear la denuncia');
     } finally {
-      setEnviando(false)
+      setEnviando(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={manejarEnvio} className="space-y-6">
@@ -207,7 +208,7 @@ export default function FormularioDenuncia() {
       {/* Evidencia (fotos) */}
       <div>
         <label htmlFor="evidencia" className="block text-sm font-semibold mb-2">
-          Evidencia (fotos, videos)
+          Evidencia (fotos) --opcional--
         </label>
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#0d7c66] transition-colors">
           <input
@@ -236,8 +237,8 @@ export default function FormularioDenuncia() {
           <input
             type="text"
             id="ubicacion"
-            value={ubicacionTexto}
-            onChange={(e) => setUbicacionTexto(e.target.value)}
+            // value={ubicacionTexto}
+            // onChange={(e) => setUbicacionTexto(e.target.value)}
             placeholder="Ej: Parque Central Bogotá"
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0d7c66] focus:border-transparent"
           />
@@ -250,19 +251,10 @@ export default function FormularioDenuncia() {
           </button>
         </div>
 
-        <p className="text-sm text-gray-600 mb-3">
-          El botón de Mi ubicación se utilizará para facilitar la ubicación actual, donde funcionará en compañía del
-          mapa para colocar la ubicación real de donde está el ciudadano en el momento.
-        </p>
-
         {/* Mapa para seleccionar ubicación */}
         <div className="h-96 rounded-lg overflow-hidden border border-gray-300">
           <SelectorUbicacionMapa coordenadas={coordenadas} onCambiarCoordenadas={setCoordenadas} />
         </div>
-        <p className="text-sm text-gray-500 mt-2">
-          Aquí va ir un mapa único para esta denuncia donde el ciudadano va tener la opción de marcar la ubicación donde
-          es el sitio del problema. Esto con la ayuda de la librería de leaflet.
-        </p>
       </div>
 
       {/* Anonimato */}
@@ -281,11 +273,7 @@ export default function FormularioDenuncia() {
           </div>
           <div className="flex-1">
             <span className="font-semibold">Denuncia anónima</span>
-            <p className="text-sm text-gray-600">
-              Aquí debe aver un check button por default desactivado donde le dice al denunciante si quiere que su
-              denuncia sea anónima. Si está en desactivado mostrará info de sus datos con los que se registraron o
-              inició sesión. Si está activado únicamente se publicará con el nombre anónimo sin datos personales.
-            </p>
+            <p className="text-sm text-gray-600">Si se activa. Tu identidad no será revelada en esta denuncia.</p>
           </div>
         </label>
       </div>

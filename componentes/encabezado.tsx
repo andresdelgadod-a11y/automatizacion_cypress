@@ -31,15 +31,15 @@ export default function Encabezado() {
               <span className="text-[#0d7c66] text-xl">🌿</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold">JUSTICIA VERDE</h1>
-              <p className="text-xs text-green-100">Denuncias ambientales</p>
+              <h1 className="text-2xl font-bold">JUSTICIA VERDE</h1>
+              <p className="text-xl text-green-100">Denuncias ambientales</p>
             </div>
           </Link>
 
           <nav className="flex items-center gap-6">
-            <Link href="/" className="hover:text-green-200 transition-colors">
+            {/* <Link href="/" className="hover:text-green-200 transition-colors">
               Inicio
-            </Link>
+            </Link> */}
 
             {usuarioActual ? (
               <>
@@ -83,9 +83,9 @@ export default function Encabezado() {
             ) : (
               <Link
                 href="/auth/login"
-                className="bg-white text-[#0d7c66] px-4 py-2 rounded-full hover:bg-green-50 transition-colors"
+                className="bg-white text-[#0d7c66] font-bold px-4 py-2 rounded-full hover:bg-green-50 transition-colors"
               >
-                Cuenta
+                Iniciar sesión
               </Link>
             )}
           </nav>

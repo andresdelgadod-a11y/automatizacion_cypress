@@ -99,10 +99,10 @@ export default function EditarDenunciaPage({ params }: { params: Promise<{ id: s
                     })
                     setUbicacionTexto(`${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`)
                 },
-                (error) => {
-                    console.error("[v0] Error al obtener ubicación:", error)
-                    alert("No se pudo obtener tu ubicación")
-                },
+                // (error) => {
+                //     console.error("[v0] Error al obtener ubicación:", error)
+                //     alert("No se pudo obtener tu ubicación")
+                // },
             )
         }
     }
@@ -259,6 +259,11 @@ export default function EditarDenunciaPage({ params }: { params: Promise<{ id: s
                                 </button>
                             </div>
 
+                            {/* Mapa */}
+                            <div className="h-96 rounded-lg overflow-hidden border border-gray-300">
+                                <SelectorUbicacionMapa coordenadas={coordenadas} onCambiarCoordenadas={setCoordenadas} />
+                            </div>
+
                             {/* Toggle anónimo */}
                             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                                 <div>
@@ -278,11 +283,6 @@ export default function EditarDenunciaPage({ params }: { params: Promise<{ id: s
                                             }`}
                                     />
                                 </button>
-                            </div>
-
-                            {/* Mapa */}
-                            <div className="h-96 rounded-lg overflow-hidden border border-gray-300">
-                                <SelectorUbicacionMapa coordenadas={coordenadas} onCambiarCoordenadas={setCoordenadas} />
                             </div>
                         </div>
 
