@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise"
+import mysql from "mysql2/promise";
 
 // Configuración de la conexión a MySQL
 const pool = mysql.createPool({
@@ -10,6 +10,6 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-})
+});
 
-export default pool
+export default pool;
