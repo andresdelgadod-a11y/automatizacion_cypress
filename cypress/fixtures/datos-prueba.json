@@ -1,0 +1,23 @@
+{
+  "usuario_nuevo": {
+    "nombre": "Juan Pérez Prueba",
+    "correo_base": "prueba_",
+    "correo_dominio": "@ejemplo.com",
+    "contraseña": "ClaveNueva123*"
+  },
+  "credenciales_invalidas": {
+    "correo": "no_existe@ejemplo.com",
+    "contraseña": "clave_erronea"
+  },
+  "usuario_valido": {
+    "correo": "asd@gmail.com",
+    "contraseña": "123456789"
+  },
+  "denuncia_valida": {
+    "tipo": "Deforestación",
+    "titulo": "Tala ilegal verificada",
+    "descripcion": "Se observa tala masiva en zona protegida",
+    "ubicacion": "Cauca, Colombia",
+    "prioridad": "Alta"
+  }
+}

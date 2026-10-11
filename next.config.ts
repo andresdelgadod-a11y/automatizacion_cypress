@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
   // Configuración para producción
   reactStrictMode: true,
   // Optimizaciones
-  swcMinify: true,
+  
 }
 
 export default nextConfig
