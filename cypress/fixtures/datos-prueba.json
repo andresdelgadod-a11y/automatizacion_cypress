@@ -19,5 +19,13 @@
     "descripcion": "Se observa tala masiva en zona protegida",
     "ubicacion": "Cauca, Colombia",
     "prioridad": "Alta"
+  },
+  "usuario_valido2": {
+    "correo": "juan@gmail.com",
+    "contraseña": "12345678"
+  },
+  "admin_valido": {
+    "correo": "admin@gmail.com",
+    "contraseña": "admin123"
   }
 }
